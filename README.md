@@ -4,8 +4,9 @@ Programming Assignment 1, Part 1
 A. Required elements
 - Use either the arrow keys or "WASD" to tilt the board
 - The goal of the game is to move the ball into the green circle to win
+- The sphere has a "Float Speed" of 10 and a "Move Speed" of 1.
+- I allow a maximum plane tilt of 10 degrees, and a "Tilt Sensitivity" of 20.
 - There are what I call "wind forces" that will push the ball away from the green circle. Occasionally, they can be strong enough to push the ball off the platform.
-- I allow a maximum tilt of 10 degrees.
 - Hit 'Q' or ESC to quit
 - Hit 'R' to restart
 
