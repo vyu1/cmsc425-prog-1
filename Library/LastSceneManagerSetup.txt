@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/Tilt A Ball Game.unity
-  isLoaded: 1
-  isActive: 1
