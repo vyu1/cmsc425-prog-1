@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BallController : MonoBehaviour {
 
@@ -16,10 +17,13 @@ public class BallController : MonoBehaviour {
 	public Transform plane;
 	public GameObject pickUpPrefab;
 	public Transform pickUps;
+	public Text countText;
+	public Text goalText;
 
 	private List<GameObject> wallParentPrefabs = new List<GameObject> ();
 	private List<GameObject> currentlyRotatingPrefabs = new List<GameObject> ();
 	private bool goalEntered;
+	private int count = 2;
 
 	void Start () 
 	{
@@ -44,8 +48,23 @@ public class BallController : MonoBehaviour {
 		for (int i = 0; i < 6; i++) {
 			float pickUpLocationX = Random.Range (-5, 5) + 0.5f;
 			float pickUpLocationZ = Random.Range (-5, 5) + 0.5f;
+			while (pickUpLocationX == 4.5 && pickUpLocationZ == 4.5) {
+				pickUpLocationX = Random.Range (-5, 5) + 0.5f;
+				pickUpLocationZ = Random.Range (-5, 5) + 0.5f;
+			}
 			Vector3 pos = new Vector3 (pickUpLocationX, 0.25f, pickUpLocationZ);
 			Instantiate (pickUpPrefab, pos, Quaternion.identity, pickUps);
+		}
+
+		count = 2;
+		SetCountText ();
+	}
+
+	void SetCountText() {
+		if (count <= 0) {
+			countText.text = "Done! Go to the goal!";
+		} else {
+			countText.text = "Pick-ups remaining: " + count.ToString ();
 		}
 	}
 
@@ -61,10 +80,16 @@ public class BallController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) 
 	{
-		if (other.gameObject.CompareTag ("Goal")) 
+		if (other.gameObject.CompareTag ("Goal") && count <= 0) 
 		{
+			countText.text = "";
+			goalText.text = "Congratulations. You win!";
 			this.rb.isKinematic = true;
 			goalEntered = true;
+		} else if (other.gameObject.CompareTag ("Pick Up")) {
+			other.gameObject.SetActive (false);
+			count -= 1;
+			SetCountText ();
 		}
 	}
 
@@ -92,19 +117,24 @@ public class BallController : MonoBehaviour {
 			rb.AddForce(0, thrustSpeed, 0, ForceMode.Impulse);
 		}
 
-		foreach (GameObject wallParent in wallParentPrefabs) {
-			float randomNumber = Random.Range (0.0f, 1.0f);
-			int rotationDirection = Random.Range (0, 2);
-			if (randomNumber < (Time.deltaTime / 10) && !currentlyRotatingPrefabs.Contains(wallParent)) {
-//				wallParent.transform.rotation = Quaternion.AngleAxis (90, Vector3.up);
-				currentlyRotatingPrefabs.Add (wallParent);
-				if (rotationDirection == 0) {
-					StartCoroutine(RotateMe(wallParent, Vector3.up * 90, 1));
-				} else {
-					StartCoroutine(RotateMe(wallParent, Vector3.up * 270, 1));
-				}
-			}
+		if (this.gameObject.transform.position.y <= -10) {
+			countText.text = "";
+			goalText.text = "Sorry. You lose!";
 		}
+
+//		foreach (GameObject wallParent in wallParentPrefabs) {
+//			float randomNumber = Random.Range (0.0f, 1.0f);
+//			int rotationDirection = Random.Range (0, 2);
+//			if (randomNumber < (Time.deltaTime / 10) && !currentlyRotatingPrefabs.Contains(wallParent)) {
+////				wallParent.transform.rotation = Quaternion.AngleAxis (90, Vector3.up);
+//				currentlyRotatingPrefabs.Add (wallParent);
+//				if (rotationDirection == 0) {
+//					StartCoroutine(RotateMe(wallParent, Vector3.up * 90, 1));
+//				} else {
+//					StartCoroutine(RotateMe(wallParent, Vector3.up * 270, 1));
+//				}
+//			}
+//		}
 	}
 
 	IEnumerator RotateMe(GameObject wallParent, Vector3 byAngles, float inTime) {
