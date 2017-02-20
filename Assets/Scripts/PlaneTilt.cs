@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlaneTilt : MonoBehaviour {
 
-	public float tiltAngle;
+	public float tiltAngle = 10.0f;
 	public Vector3 currentRot;
-	public float tiltSensitivity;
+	public float tiltSensitivity = 20.0f;
 
 	// Use this for initialization
 	void Start () {

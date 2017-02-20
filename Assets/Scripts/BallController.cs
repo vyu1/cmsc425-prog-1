@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class BallController : MonoBehaviour {
 
-	public float floatSpeed;
-	public float moveSpeed;
-	public float thrustSpeed;
-	public float gridZ;
-	public float gridX;
+	public float floatSpeed = 10.0f;
+	public float moveSpeed = 1.0f;
+	public float thrustSpeed = 5.0f;
+	public float gridZ = 4.0f;
+	public float gridX = 4.0f;
 
 	public Rigidbody rb;
 	public GameObject hingeCenterPrefab;
@@ -20,8 +20,6 @@ public class BallController : MonoBehaviour {
 	public Text countText;
 	public Text goalText;
 
-	private List<GameObject> wallParentPrefabs = new List<GameObject> ();
-	private List<GameObject> currentlyRotatingPrefabs = new List<GameObject> ();
 	private bool goalEntered;
 	private int count = 2;
 
@@ -30,15 +28,14 @@ public class BallController : MonoBehaviour {
 		rb = GetComponent<Rigidbody> ();
 		goalEntered = false;
 
-		for (float z = -4; z <= gridZ; z+=2) {
-			for (float x = -4; x <= gridX; x+=2) {
-				if (z != 0 || x != 0) {
-					Vector3 pos = new Vector3 (x, 0.1f, z);
+		for (float z = -4; z <= gridZ; z++) {
+			for (float x = -4; x <= gridX; x++) {
+				if ((z != 0 || x != 0) && ((z + x) % 2 == 0)) {
+					Vector3 pos = new Vector3 (x, 0f, z);
 					GameObject obj = Instantiate (hingeCenterPrefab, pos, Quaternion.identity, plane) as GameObject;
 					Vector3 pos2 = new Vector3 (x-0.4f, 0.1f, z);
-					GameObject obj2 = Instantiate (innerWallPrefab, pos2, Quaternion.identity) as GameObject;
+					GameObject obj2 = Instantiate (innerWallPrefab, pos2, innerWallPrefab.transform.rotation) as GameObject;
 					obj2.transform.parent = obj.transform;
-					wallParentPrefabs.Add (obj);
 					float randomDirection = Random.Range (0, 4);
 					obj.transform.rotation = Quaternion.AngleAxis (90 * randomDirection, Vector3.up);
 				}
@@ -121,29 +118,5 @@ public class BallController : MonoBehaviour {
 			countText.text = "";
 			goalText.text = "Sorry. You lose!";
 		}
-
-//		foreach (GameObject wallParent in wallParentPrefabs) {
-//			float randomNumber = Random.Range (0.0f, 1.0f);
-//			int rotationDirection = Random.Range (0, 2);
-//			if (randomNumber < (Time.deltaTime / 10) && !currentlyRotatingPrefabs.Contains(wallParent)) {
-////				wallParent.transform.rotation = Quaternion.AngleAxis (90, Vector3.up);
-//				currentlyRotatingPrefabs.Add (wallParent);
-//				if (rotationDirection == 0) {
-//					StartCoroutine(RotateMe(wallParent, Vector3.up * 90, 1));
-//				} else {
-//					StartCoroutine(RotateMe(wallParent, Vector3.up * 270, 1));
-//				}
-//			}
-//		}
-	}
-
-	IEnumerator RotateMe(GameObject wallParent, Vector3 byAngles, float inTime) {
-		var fromAngle = wallParent.transform.rotation;
-		var toAngle = Quaternion.Euler(wallParent.transform.eulerAngles + byAngles);
-		for(var t = 0f; t < 1; t += Time.deltaTime/inTime) {
-			wallParent.transform.rotation = Quaternion.Lerp(fromAngle, toAngle, t);
-			yield return null;
-		}
-		currentlyRotatingPrefabs.Remove (wallParent);
 	}
 }
