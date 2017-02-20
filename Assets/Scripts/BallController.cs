@@ -16,6 +16,7 @@ public class BallController : MonoBehaviour {
 	public Transform plane;
 
 	private List<GameObject> wallParentPrefabs = new List<GameObject> ();
+	private List<GameObject> currentlyRotatingPrefabs = new List<GameObject> ();
 	private bool goalEntered;
 
 	void Start () 
@@ -31,6 +32,8 @@ public class BallController : MonoBehaviour {
 				GameObject obj2 = Instantiate (innerWallPrefab, pos2, Quaternion.identity) as GameObject;
 				obj2.transform.parent = obj.transform;
 				wallParentPrefabs.Add (obj);
+				float randomDirection = Random.Range (0, 4);
+				obj.transform.rotation = Quaternion.AngleAxis (90 * randomDirection, Vector3.up);
 			}
 		}
 	}
@@ -78,12 +81,28 @@ public class BallController : MonoBehaviour {
 			rb.AddForce(0, thrustSpeed, 0, ForceMode.Impulse);
 		}
 
-		float random;
 		foreach (GameObject wallParent in wallParentPrefabs) {
-			random = Random.Range (0.0f, 1.0f);
-			if (random < (Time.deltaTime / 10)) {
-				
+			float randomNumber = Random.Range (0.0f, 1.0f);
+			int rotationDirection = Random.Range (0, 2);
+			if (randomNumber < (Time.deltaTime / 10) && !currentlyRotatingPrefabs.Contains(wallParent)) {
+				wallParent.transform.rotation = Quaternion.AngleAxis (90, Vector3.up);
+//				currentlyRotatingPrefabs.Add (wallParent);
+//				if (rotationDirection == 0) {
+//					StartCoroutine(RotateMe(wallParent, Vector3.up * 90, 1));
+//				} else {
+//					StartCoroutine(RotateMe(wallParent, Vector3.up * 270, 1));
+//				}
 			}
 		}
+	}
+
+	IEnumerator RotateMe(GameObject wallParent, Vector3 byAngles, float inTime) {
+		var fromAngle = wallParent.transform.rotation;
+		var toAngle = Quaternion.Euler(wallParent.transform.eulerAngles + byAngles);
+		for(var t = 0f; t < 1; t += Time.deltaTime/inTime) {
+			wallParent.transform.rotation = Quaternion.Lerp(fromAngle, toAngle, t);
+			yield return null;
+		}
+		currentlyRotatingPrefabs.Remove (wallParent);
 	}
 }
