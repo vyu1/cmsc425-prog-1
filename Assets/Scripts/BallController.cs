@@ -28,6 +28,7 @@ public class BallController : MonoBehaviour {
 		rb = GetComponent<Rigidbody> ();
 		goalEntered = false;
 
+		// instantiate the inner walls and their random rotation orientation
 		for (float z = -4; z <= gridZ; z++) {
 			for (float x = -4; x <= gridX; x++) {
 				if ((z != 0 || x != 0) && ((z + x) % 2 == 0)) {
@@ -42,6 +43,7 @@ public class BallController : MonoBehaviour {
 			}
 		}
 
+		// instantiate the 6 pick up objects
 		for (int i = 0; i < 6; i++) {
 			float pickUpLocationX = Random.Range (-5, 5) + 0.5f;
 			float pickUpLocationZ = Random.Range (-5, 5) + 0.5f;
@@ -53,6 +55,7 @@ public class BallController : MonoBehaviour {
 			Instantiate (pickUpPrefab, pos, Quaternion.identity, pickUps);
 		}
 
+		// this is the starting count of the game.
 		count = 2;
 		SetCountText ();
 	}
