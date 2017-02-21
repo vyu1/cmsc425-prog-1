@@ -10,6 +10,7 @@ A. Required elements
 B. Additional elements
 
 C. Known issues
+- The inner walls may not rotate at the same speeds as each other. For example, one wall may rotate it's full 90 degrees faster than another wall.
 - Trying to quit the game by using 'Q' or ESC will not work in the Unity editor mode. According to some posts on Unity Answers, this will only work in an executable of the game.
 - Similarly, the lighting dims after restarting the game in editor mode, but works correctly in an executable.
 
